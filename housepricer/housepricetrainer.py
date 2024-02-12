@@ -5,7 +5,7 @@ Script to train model on house prices in Bristol
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 #import pgeocode as pgc
-import better_postcodes as bpc
+from housepricer import better_postcodes as bpc
 import matplotlib.pyplot as plt
 from sklearn.metrics import PredictionErrorDisplay
 from sklearn import preprocessing
@@ -31,7 +31,7 @@ def data_pruning(house_data : pd.DataFrame, features : list[str]) -> pd.DataFram
         # house_data.loc[:,'longitude'] = geocode_data.loc[:,'longitude']
         # pd.set_option("display.precision", 14)
         #print(house_data)
-        converter = bpc.better_postcodes("../Data/codepo_gb/Data/CSV/")
+        converter = bpc.better_postcodes("../data/codepo_gb/Data/CSV/")
         postcode_list = house_data.loc[:,'postcode'].values.tolist()
         df_coords = converter.query_postcodes(postcode_list)
         house_data.loc[:,'latitude'] = df_coords.loc[:,'Eastings'] #similar to lat and long (Eastings and Northings)

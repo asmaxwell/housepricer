@@ -11,6 +11,8 @@ class better_postcodes:
     def __init__(self, postcode_directory: str):
         self._postcode_directory = postcode_directory
         dataframe_list =[]
+        print(os.getcwd())
+        print(self._postcode_directory)
         for file in os.listdir(postcode_directory):
             filename = os.fsdecode(file)
             file_dataframe = pd.read_csv(postcode_directory+filename,header=None).loc[:,[0, 2, 3]]

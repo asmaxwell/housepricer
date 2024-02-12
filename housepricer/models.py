@@ -5,7 +5,7 @@ Class to train, search hyper parameters, and deploy random forest models for Bri
 
 import pandas as pd
 import numpy as np
-import housepricetrainer as hpt
+from housepricer import housepricetrainer as hpt
 from sklearn import preprocessing
 from sklearn import model_selection
 
@@ -20,11 +20,10 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn_genetic.space import Continuous, Categorical, Integer
 import joblib
 
-import housepricetrainer as hpt
-
 class random_forest:
     data_directory : str
     model_directory : str
+    model_filename : str
     data : list[float]
     features : list[str]
     numerical_features : list[str]
@@ -37,7 +36,7 @@ class random_forest:
     y_test : list[float]
 
 
-    def __init__(self, data_directory: str, model_directory: str) ->None:
+    def __init__(self, data_directory: str, model_directory: str, model_filename : str = None)  ->None:
         self.data_directory = data_directory
         self.load_data()
 
@@ -53,8 +52,10 @@ class random_forest:
         self.get_XY()
         self.get_test_train_split()
 
-        self.model_directory = model_directory
-        self.load_model()
+        self.model_filename = model_filename
+        if(model_filename != None):
+            self.model_directory = model_directory
+            self.load_model(model_filename)
         return
 
 
@@ -77,13 +78,14 @@ class random_forest:
         If a model has been previously trained and stored it can be loaded as a member variable 
         """
         self.model = joblib.load(self.model_directory + filename)
+        self.model_filename = filename
         return
 
     def save_model(self, filename: str) -> None:
         joblib.dump(self.model, self.model_directory + filename)
         return
 
-    def get_XY(self):
+    def get_XY(self) -> None:
         """
         Do preprocessing, encoding and produce list for X and Y from Data
         """

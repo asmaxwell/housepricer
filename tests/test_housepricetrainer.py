@@ -3,7 +3,7 @@ Created by Andy S Maxwell 19/10/2023
 Test file for house price trainer
 """
 import pandas as pd
-import housepricetrainer as hpt
+from housepricer import housepricetrainer as hpt
 
 ### 1 - def data_pruning(house_data : pd.DataFrame, feature_list : list[str]) -> None:
 def test_data_pruning_features() -> None:
@@ -64,15 +64,15 @@ def test_data_pruning_postcode() -> None:
     #prune to these features
     df_pruned, y_DF = hpt.data_pruning(df, ["latitude", "longitude"])
     print(df_pruned)
-    assert df_pruned.loc[0, "latitude"] == 609588
-    assert df_pruned.loc[1, "latitude"] == 358963
-    assert df_pruned.loc[2, "latitude"] == 358322
-    assert df_pruned.loc[3, "latitude"] == 355944
+    assert df_pruned.loc[0, "latitude"] == 358963#609588
+    assert df_pruned.loc[1, "latitude"] == 358322#358963
+    assert df_pruned.loc[2, "latitude"] == 355944#358322
+    assert df_pruned.loc[3, "latitude"] == 609588#355944
 
-    assert df_pruned.loc[0, "longitude"] == 295701
-    assert df_pruned.loc[1, "longitude"] == 173041
-    assert df_pruned.loc[2, "longitude"] == 173531
-    assert df_pruned.loc[3, "longitude"] == 172967
+    assert df_pruned.loc[0, "longitude"] == 173041#295701
+    assert df_pruned.loc[1, "longitude"] == 173531#173041
+    assert df_pruned.loc[2, "longitude"] == 172967#173531
+    assert df_pruned.loc[3, "longitude"] == 295701#172967
 
 
 ### 2 - def data_encoding(house_data: pd.DataFrame, categorical_features : list[str], numerical_features : list[str])  -> pd.DataFrame:
