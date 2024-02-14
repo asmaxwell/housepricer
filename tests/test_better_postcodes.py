@@ -19,9 +19,10 @@ def test_query_postcodes() -> None:
 
     postcode_list = ["NR17 2LP", "BS8 3PH", "BS8 1TQ"]
     df = converter.query_postcodes(postcode_list)
-    assert df.loc[0, "Eastings"] == 358322
-    assert df.loc[0, "Northings"] == 173531
-    assert df.loc[1, "Eastings"] == 355944
-    assert df.loc[1, "Northings"] == 172967 
+    df = df.sort_values(by = "Eastings").reset_index(drop=True)
+    assert df.loc[0, "Eastings"] == 355944
+    assert df.loc[0, "Northings"] == 172967
+    assert df.loc[1, "Eastings"] == 358322
+    assert df.loc[1, "Northings"] == 173531     
     assert df.loc[2, "Eastings"] == 609588
     assert df.loc[2, "Northings"] == 295701

@@ -63,16 +63,17 @@ def test_data_pruning_postcode() -> None:
     df = pd.DataFrame(data)
     #prune to these features
     df_pruned, y_DF = hpt.data_pruning(df, ["latitude", "longitude"])
+    df_pruned = df_pruned.sort_values(by = "latitude").reset_index(drop=True)
     print(df_pruned)
-    assert df_pruned.loc[0, "latitude"] == 358963#609588
-    assert df_pruned.loc[1, "latitude"] == 358322#358963
-    assert df_pruned.loc[2, "latitude"] == 355944#358322
-    assert df_pruned.loc[3, "latitude"] == 609588#355944
+    assert df_pruned.loc[0, "latitude"] == 355944
+    assert df_pruned.loc[1, "latitude"] == 358322
+    assert df_pruned.loc[2, "latitude"] == 358963    
+    assert df_pruned.loc[3, "latitude"] == 609588
 
-    assert df_pruned.loc[0, "longitude"] == 173041#295701
-    assert df_pruned.loc[1, "longitude"] == 173531#173041
-    assert df_pruned.loc[2, "longitude"] == 172967#173531
-    assert df_pruned.loc[3, "longitude"] == 295701#172967
+    assert df_pruned.loc[0, "longitude"] == 172967
+    assert df_pruned.loc[1, "longitude"] == 173531
+    assert df_pruned.loc[2, "longitude"] == 173041    
+    assert df_pruned.loc[3, "longitude"] == 295701
 
 
 ### 2 - def data_encoding(house_data: pd.DataFrame, categorical_features : list[str], numerical_features : list[str])  -> pd.DataFrame:
