@@ -20,7 +20,7 @@ def test__init__(load_database) -> None:
     """
     rf = load_database
     assert(len(rf.data)>0)
-    assert(rf.model_filename == None or self.model != None)
+    assert(rf.model_filename == None or rf.model != None)
     assert(len(rf.features) >0)
     assert(len(rf.numerical_features) >0)
     assert(len(rf.categorical_features) >0)
