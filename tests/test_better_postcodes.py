@@ -11,7 +11,7 @@ def test_query_postcodes() -> None:
     #test postcode conversion
     postcode = "BS1 2AN"
     
-    converter = bpc.better_postcodes("../data/codepo_gb/Data/CSV/")
+    converter = bpc.better_postcodes("data/codepo_gb/Data/CSV/")
 
     df = converter.query_postcodes(postcode)
     assert df.loc[0, "Eastings"] == 358963

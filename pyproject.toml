@@ -1,0 +1,15 @@
+# pyproject for housepricer app
+
+[build-system]
+requires = ["setuptools>=64.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "housepricer"
+version = "0.0.1"
+description = "Set hyperparameters, train and deploy models, for predicting house prices"
+readme = "README.md"
+authors = [{ name = "Andrew Maxwell", email = "andrew.stephen.maxwell@gmail.com" }]
+
+[project.scripts]
+hello_cli = "housepricer.__main__:main"
