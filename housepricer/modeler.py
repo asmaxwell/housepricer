@@ -11,16 +11,18 @@ from sklearn import model_selection
 
 from sklearn.pipeline import make_pipeline
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
+#from sklearn.metrics import mean_squared_error
 from sklearn import model_selection
 
 from sklearn_genetic import GASearchCV
 from sklearn_genetic import ExponentialAdapter
 from sklearn.model_selection import StratifiedKFold
 from sklearn_genetic.space import Continuous, Categorical, Integer
+from sklearn.datasets import fetch_california_housing
 import joblib
 
 class random_forest:
+    load_cal_data : bool
     data_directory : str
     model_directory : str
     postcode_directory : str
@@ -42,19 +44,29 @@ class random_forest:
     def __init__(self, data_directory: str
                  , model_directory: str
                  , model_filename : str = None
-                 , postcode_directory : str = None)  ->None:
-        self.data_directory = data_directory
+                 , postcode_directory : str = None
+                 , load_cal_data : bool = False
+                 )  ->None:
+        """
+            Init function, loading data, postcodes, and model if supplied. Test californian data can be loaded if specified
+        """
+        self.load_cal_data = load_cal_data
+        self.data_directory = None if load_cal_data else data_directory
         self.postcode_directory = postcode_directory
         self.load_data()
 
-        # select and engineer features
-        self.features = ['year', 'month', 'day', 'latitude', 'longitude'
-            ,'property_type','new_build', 'estate_type'
-            , 'transaction_category']
+        if self.load_cal_data:
+            #cal features
+            self.features = self.data[0].index
+        else:
+            # select and engineer features
+            self.features = ['year', 'month', 'day', 'latitude', 'longitude'
+                ,'property_type','new_build', 'estate_type'
+                , 'transaction_category']
 
-        # use dummy encoding for categories
-        self.numerical_features = ['year', 'month', 'day', 'latitude', 'longitude']
-        self.categorical_features = ['property_type', 'new_build','estate_type','transaction_category']
+            # use dummy encoding for categories
+            self.numerical_features = ['year', 'month', 'day', 'latitude', 'longitude']
+            self.categorical_features = ['property_type', 'new_build','estate_type','transaction_category']
 
         self.get_XY()
         self.get_test_train_split(0.1)
@@ -68,18 +80,23 @@ class random_forest:
             self.model = make_pipeline(self.model_scaler, RandomForestRegressor(n_jobs = -1, random_state=0))
 
         return
+        
 
 
     def load_data(self) -> None:
         """
-        function to load house price data as member variable
+        Function to load house price data as member variable
         """
-        data = pd.read_csv(self.data_directory + "ppd_data.csv")
-        # remove NaN and scale price
-        data = data[data.loc[:,'postcode'].notna()]
+        if self.load_cal_data:
+            X, y = fetch_california_housing(return_X_y=True, as_frame=True)
+            data = [X, y]
+        else:
+            data = pd.read_csv(self.data_directory + "ppd_data.csv")
+            # remove NaN and scale price
+            data = data[data.loc[:,'postcode'].notna()]
 
-        # scale price paid in millions
-        data.loc[:,'price_paid'] = data.loc[:,'price_paid']/1.0e6
+            # scale price paid in millions
+            data.loc[:,'price_paid'] = data.loc[:,'price_paid']/1.0e6
 
         self.data = data
         return
@@ -100,17 +117,21 @@ class random_forest:
         """
         Do preprocessing, encoding and produce list for X and Y from Data
         """
-        # split features into categorical and numerical
-        X_dataframe, y_dataframe = hpt.data_pruning(self.data, self.features) if self.postcode_directory == None else hpt.data_pruning(self.data, self.features, self.postcode_directory) 
-        
-        # keep subset of data for now
-        recent_years = X_dataframe['year']>1989 #data starts from around 1990.
-        X_dataframe = X_dataframe[recent_years]
+        if self.load_cal_data:
+            self.X = self.data[0]
+            self.y = self.data[1]
+        else:
+            # split features into categorical and numerical
+            X_dataframe, y_dataframe = hpt.data_pruning(self.data, self.features) if self.postcode_directory == None else hpt.data_pruning(self.data, self.features, self.postcode_directory) 
+            
+            # keep subset of data for now
+            recent_years = X_dataframe['year']>1989 #data starts from around 1990.
+            X_dataframe = X_dataframe[recent_years]
 
-        self.y = y_dataframe.loc[recent_years].values.tolist()
-        #encode data
-        X_dataframe = hpt.data_encoding(X_dataframe, self.categorical_features, self.numerical_features)
-        self.X = X_dataframe.values.tolist()
+            self.y = y_dataframe.loc[recent_years].values.tolist()
+            #encode data
+            X_dataframe = hpt.data_encoding(X_dataframe, self.categorical_features, self.numerical_features)
+            self.X = X_dataframe.values.tolist()
         return
     def get_test_train_split(self, test_size: float = 0.1) -> None:
         """

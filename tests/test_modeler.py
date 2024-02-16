@@ -13,6 +13,12 @@ def load_database() -> None:
     rf = modeler.random_forest("data/", "./")
     yield rf
     return
+@pytest.fixture(scope='session') 
+def load_cal_database() -> None:
+    rf = modeler.random_forest("data/", "data/", None, None, True)
+    yield rf
+    return
+
 ### 1 - test __init__
 def test__init__(load_database) -> None:
     """
@@ -61,5 +67,39 @@ def test_random_hyperparameter_search(load_database) -> None:
 @pytest.mark.slow
 def test_evolve_hyperparameter_search(load_database) -> None:
     rf = load_database
+    rf.evolve_hyperparameter_search(3, 3)
+    assert(rf.model.get_params()["randomforestregressor__n_estimators"] != 100) #checking if default value no longer active
+
+#test cal test data
+    def test_cal__init__(load_cal_database) -> None:
+        """
+        Test init for loading cal data
+        """
+        rf = load_cal_database
+        assert(len(rf.data)>0)
+        assert(rf.model_filename == None or rf.model != None)
+        assert(len(rf.features) >0)
+        assert(len(rf.X)>0)
+        assert(len(rf.X)==len(rf.y))
+
+def test_cal_get_test_train_split(load_cal_database) -> None:
+    rf = load_cal_database
+    test_size = 0.5
+    rf.get_test_train_split(test_size)
+    assert(len(rf.X_test)>0)
+    assert(len(rf.X_test)==len(rf.y_test))
+    assert(len(rf.X_train)>0)
+    assert(len(rf.X_train)==len(rf.y_train))
+    assert(np.abs(test_size*len(rf.X_train) - (1-test_size)*len(rf.X_test)) <1e-3 * len(rf.X_test))
+
+@pytest.mark.slow
+def test_cal_random_hyperparameter_search(load_cal_database) -> None:
+    rf = load_cal_database
+    rf.random_hyperparameter_search(3)
+    assert(rf.model.get_params()["randomforestregressor__n_estimators"] != 100) #checking if default value no longer active
+
+@pytest.mark.slow
+def test_cal_evolve_hyperparameter_search(load_load_cal_databasedatabase) -> None:
+    rf = load_cal_database
     rf.evolve_hyperparameter_search(3, 3)
     assert(rf.model.get_params()["randomforestregressor__n_estimators"] != 100) #checking if default value no longer active

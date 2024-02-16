@@ -53,4 +53,40 @@ def full_run_random(data_directory: str
 
     return 
 
+def cal_run_evolution(model_directory, population_size : int
+                       ,  generations : int) -> None:
+    """Using californian dataset, hyperparameter search and training of model, which is then saved to file
+        Uses evolution algorithm
+        To be run from command line via __main__.py
+    """
+       
+    print("loading data and setting up model")
+    model = modeler.random_forest(None, model_directory, None, None, True)
+
+    print("doing evolution hyperparameter search")
+    model.evolve_hyperparameter_search(population_size, generations)
+
+    print(model.model)
+    model.save_model("EvolveModel.save")
+
+    return
+
+def cal_run_random(model_directory, iterations : int) -> None:
+    """Using californian dataset, hyperparameter search and training of model, which is then saved to file
+        Uses random search
+        To be run from command line via __main__.py
+    """
+    # initiate model
+       
+    print("loading data and setting up model")
+    model = modeler.random_forest(None, model_directory, None, None, True)
+
+    print("doing evolution hyperparameter search")
+    model.random_hyperparameter_search(iterations)
+
+    print(model.model)
+    model.save_model("RandomModel.save")
+
+    return 
+
     
