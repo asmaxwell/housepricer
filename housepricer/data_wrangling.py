@@ -78,7 +78,7 @@ def data_encoding(house_data: pd.DataFrame, categorical_features : list[str], nu
     return pd.concat([X_categorical, X_numerical], axis="columns")
 
 
-def plot_cross_validated_pred(y:list, y_pred:list) -> None:
+def plot_cross_validated_pred(y:list, y_pred:list, filename : str = None) -> None:
     """
     Function to use matlib plot to show predicted vs true y and the residuals
     """
@@ -103,4 +103,8 @@ def plot_cross_validated_pred(y:list, y_pred:list) -> None:
     axs[1].set_title("Residuals vs. Predicted Values")
     fig.suptitle("Plotting cross-validated predictions")
     plt.tight_layout()
-    plt.show()
+    if filename == None:
+        plt.show()
+    else:
+        print(filename)
+        plt.savefig(filename, format='png')

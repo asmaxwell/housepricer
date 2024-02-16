@@ -187,7 +187,7 @@ class random_forest:
                 ,"randomforestregressor__max_leaf_nodes": Integer(2, 30)
                 ,"randomforestregressor__max_samples": Continuous(0.05, 1.0, distribution='uniform')
                 }  
-                , n_jobs : int = 8) -> None:
+                , n_jobs : int = -1) -> None:
         """
         Search over grid given to find best model using evolution algorithm
         """
@@ -213,6 +213,18 @@ class random_forest:
         X_scaled = self.model_scaler.transform(X_vals)
         y_scaled = self.model.predict(X_scaled)
         return self.model_scaler.inverse_transform(y_scaled)
+    
+    def save_true_vs_predicted(self, filename : str):
+        """
+        Save to output directory a figure of true vs predicted value for the training and test sets
+        """
+        y_pred = model_selection.cross_val_predict(self.model, self.X_train, self.y_train, cv=5)
+        hpt.plot_cross_validated_pred(np.log(self.y_train), np.log(y_pred), self.model_directory + "train_" + filename )
+
+        y_pred = model_selection.cross_val_predict(self.model, self.X_test, self.y_test, cv=5)
+        test_fig = hpt.plot_cross_validated_pred(np.log(self.y_test), np.log(y_pred), self.model_directory + "test_" + filename  )
+
+
 
     
 

@@ -30,6 +30,9 @@ def full_run_evolution(data_directory: str
     print(model.model)
     model.save_model("EvolveModel.save")
 
+    print("saving True vs Pred")
+    model.save_true_vs_predicted("True_Pred.png")
+
     return
 
 def full_run_random(data_directory: str
@@ -51,6 +54,9 @@ def full_run_random(data_directory: str
     print(model.model)
     model.save_model("RandomModel.save")
 
+    print("saving True vs Pred")
+    model.save_true_vs_predicted("True_Pred.png")
+
     return 
 
 def cal_run_evolution(model_directory, population_size : int
@@ -69,6 +75,9 @@ def cal_run_evolution(model_directory, population_size : int
     print(model.model)
     model.save_model("EvolveModel.save")
 
+    print("saving True vs Pred")
+    model.save_true_vs_predicted("True_Pred.png")
+
     return
 
 def cal_run_random(model_directory, iterations : int) -> None:
@@ -86,6 +95,9 @@ def cal_run_random(model_directory, iterations : int) -> None:
 
     print(model.model)
     model.save_model("RandomModel.save")
+
+    print("saving True vs Pred")
+    model.save_true_vs_predicted("True_Pred.png")
 
     return 
 

@@ -5,6 +5,7 @@ Test for model class to train random forest model
 import pytest
 import numpy as np
 from housepricer import modeler
+import os
 
 
 ### setup - load database
@@ -70,6 +71,14 @@ def test_evolve_hyperparameter_search(load_database) -> None:
     rf.evolve_hyperparameter_search(3, 3)
     assert(rf.model.get_params()["randomforestregressor__n_estimators"] != 100) #checking if default value no longer active
 
+@pytest.mark.slow
+def test_save_true_vs_predicted(load_database) -> None:
+    rf = load_database
+    rf.random_hyperparameter_search(3)
+    rf.save_true_vs_predicted("TruePred.png")
+    assert(os.path.isfile("./train_TruePred.png"))
+    assert(os.path.isfile("./test_TruePred.png"))
+
 #test cal test data
     def test_cal__init__(load_cal_database) -> None:
         """
@@ -103,3 +112,10 @@ def test_cal_evolve_hyperparameter_search(load_load_cal_databasedatabase) -> Non
     rf = load_cal_database
     rf.evolve_hyperparameter_search(3, 3)
     assert(rf.model.get_params()["randomforestregressor__n_estimators"] != 100) #checking if default value no longer active
+@pytest.mark.slow
+def test_cal_save_true_vs_predicted(load_cal_database) -> None:
+    rf = load_cal_database
+    rf.random_hyperparameter_search(3)
+    rf.save_true_vs_predicted("TruePred.png")
+    assert(os.path.isfile("data/train_TruePred.png"))
+    assert(os.path.isfile("data/test_TruePred.png"))
