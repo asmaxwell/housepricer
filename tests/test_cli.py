@@ -9,7 +9,7 @@ from housepricer import cli
 @pytest.mark.slow
 def test_full_run_evolution():
     directory = "data/"
-    cli.full_run_evolution(directory, directory, "data/codepo_gb/Data/CSV/", 5, 3)
+    cli.full_run_evolution(directory, directory, "data/codepo_gb/Data/CSV/", 3, 2)
     assert(exists(directory + "EvolveModel.save"))
     return
 
@@ -17,14 +17,21 @@ def test_full_run_evolution():
 @pytest.mark.slow
 def test_full_run_random():
     directory = "data/"
-    cli.full_run_random(directory, directory, "data/codepo_gb/Data/CSV/", 10)
+    cli.full_run_random(directory, directory, "data/codepo_gb/Data/CSV/", 5)
+    assert(exists(directory + "RandomModel.save"))
+    return
+
+@pytest.mark.slow
+def test_full_hist_run_random():
+    directory = "data/"
+    cli.full_run_random(directory, directory, "data/codepo_gb/Data/CSV/", 5, "notrandom")
     assert(exists(directory + "RandomModel.save"))
     return
 
 @pytest.mark.slow
 def test_cal_run_evolution():
     directory = "data/"
-    cli.cal_run_evolution(directory, 5, 3)
+    cli.cal_run_evolution(directory, 3, 2)
     assert(exists(directory + "EvolveModel.save"))
     return
 
@@ -32,6 +39,13 @@ def test_cal_run_evolution():
 @pytest.mark.slow
 def test_cal_run_random():
     directory = "data/"
-    cli.cal_run_random(directory, 10)
+    cli.cal_run_random(directory, 5)
+    assert(exists(directory + "RandomModel.save"))
+    return
+
+@pytest.mark.slow
+def test_cal_hist_run_random():
+    directory = "data/"
+    cli.cal_run_random(directory, 5, "notrandom")
     assert(exists(directory + "RandomModel.save"))
     return

@@ -15,14 +15,15 @@ def full_run_evolution(data_directory: str
                        , model_directory : str
                        , postcode_directory :str 
                        , population_size : int
-                       ,  generations : int) -> None:
+                       ,  generations : int
+                       , model_type : str = "random") -> None:
     """Full set up, hyperparameter search and training of model, which is then saved to file
         Uses evolution algorithm
         To be run from command line via __main__.py
     """
        
     print("loading data and setting up model")
-    model = modeler.random_forest(data_directory, model_directory, None, postcode_directory)
+    model = modeler.trainer(data_directory, model_directory, None, postcode_directory, model_type)
 
     print("doing evolution hyperparameter search")
     model.evolve_hyperparameter_search(population_size, generations)
@@ -38,7 +39,8 @@ def full_run_evolution(data_directory: str
 def full_run_random(data_directory: str
                        , model_directory : str
                        , postcode_directory :str 
-                       , iterations : int) -> None:
+                       , iterations : int
+                       , model_type : str = "random") -> None:
     """Full set up, hyperparameter search and training of model, which is then saved to file
         Uses random search
         To be run from command line via __main__.py
@@ -46,7 +48,7 @@ def full_run_random(data_directory: str
     # initiate model
        
     print("loading data and setting up model")
-    model = modeler.random_forest(data_directory, model_directory, None, postcode_directory)
+    model = modeler.trainer(data_directory, model_directory, None, postcode_directory, model_type)
 
     print("doing evolution hyperparameter search")
     model.random_hyperparameter_search(iterations)
@@ -60,14 +62,15 @@ def full_run_random(data_directory: str
     return 
 
 def cal_run_evolution(model_directory, population_size : int
-                       ,  generations : int) -> None:
+                       ,  generations : int
+                       , model_type : str = "random") -> None:
     """Using californian dataset, hyperparameter search and training of model, which is then saved to file
         Uses evolution algorithm
         To be run from command line via __main__.py
     """
        
     print("loading data and setting up model")
-    model = modeler.random_forest(None, model_directory, None, None, True)
+    model = modeler.trainer(None, model_directory, None, None, True, model_type)
 
     print("doing evolution hyperparameter search")
     model.evolve_hyperparameter_search(population_size, generations)
@@ -80,7 +83,8 @@ def cal_run_evolution(model_directory, population_size : int
 
     return
 
-def cal_run_random(model_directory, iterations : int) -> None:
+def cal_run_random(model_directory, iterations : int
+                   , model_type : str = "random") -> None:
     """Using californian dataset, hyperparameter search and training of model, which is then saved to file
         Uses random search
         To be run from command line via __main__.py
@@ -88,7 +92,7 @@ def cal_run_random(model_directory, iterations : int) -> None:
     # initiate model
        
     print("loading data and setting up model")
-    model = modeler.random_forest(None, model_directory, None, None, True)
+    model = modeler.trainer(None, model_directory, None, None, True, model_type)
 
     print("doing evolution hyperparameter search")
     model.random_hyperparameter_search(iterations)

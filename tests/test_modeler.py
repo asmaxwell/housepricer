@@ -5,18 +5,25 @@ Test for model class to train random forest model
 import pytest
 import numpy as np
 from housepricer import modeler
+from sklearn_genetic.space import Continuous, Integer
 import os
 
 
 ### setup - load database
 @pytest.fixture(scope='session') 
 def load_database() -> None:
-    rf = modeler.random_forest("data/", "./")
+    rf = modeler.trainer("data/", "./")
     yield rf
     return
 @pytest.fixture(scope='session') 
 def load_cal_database() -> None:
-    rf = modeler.random_forest("data/", "data/", None, None, True)
+    rf = modeler.trainer("data/", "data/", None, None, True)
+    yield rf
+    return
+
+@pytest.fixture(scope='session') 
+def hist_model() -> None:
+    rf = modeler.trainer("data/", "data/", None, None, False, "notrandom")
     yield rf
     return
 
@@ -59,11 +66,29 @@ def test_set_model_params(load_database) -> None:
     assert(rf.model.get_params()["randomforestregressor__max_features"] == 13) 
     assert(rf.model.get_params()["randomforestregressor__n_estimators"] == 57)
 
+def test_set_hist_model(hist_model):
+    """
+    Test init forHist Model
+    """
+    rf = hist_model
+    assert(len(rf.data)>0)
+    assert(rf.model_filename == None or rf.model != None)
+    assert(len(rf.features) >0)
+    assert(len(rf.X)>0)
+    assert(len(rf.X)==len(rf.y))
+
+
 @pytest.mark.slow
 def test_random_hyperparameter_search(load_database) -> None:
     rf = load_database
     rf.random_hyperparameter_search(3)
     assert(rf.model.get_params()["randomforestregressor__n_estimators"] != 100) #checking if default value no longer active
+
+@pytest.mark.slow
+def test_hist_random_hyperparameter_search(hist_model) -> None:
+    rf = hist_model
+    rf.random_hyperparameter_search(3)
+    assert(rf.model.get_params()["histgradientboostingregressor__max_iter"] != 100) #checking if default value no longer active
 
 @pytest.mark.slow
 def test_evolve_hyperparameter_search(load_database) -> None:
@@ -108,10 +133,17 @@ def test_cal_random_hyperparameter_search(load_cal_database) -> None:
     assert(rf.model.get_params()["randomforestregressor__n_estimators"] != 100) #checking if default value no longer active
 
 @pytest.mark.slow
-def test_cal_evolve_hyperparameter_search(load_load_cal_databasedatabase) -> None:
+def test_cal_evolve_hyperparameter_search(load_cal_database) -> None:
     rf = load_cal_database
     rf.evolve_hyperparameter_search(3, 3)
     assert(rf.model.get_params()["randomforestregressor__n_estimators"] != 100) #checking if default value no longer active
+
+@pytest.mark.slow
+def test_cal_hist_evolve_hyperparameter_search(hist_model) -> None:
+    rf = hist_model
+    rf.evolve_hyperparameter_search(3, 3)
+    assert(rf.model.get_params()["histgradientboostingregressor__max_iter"] != 100) #checking if default value no longer active
+
 @pytest.mark.slow
 def test_cal_save_true_vs_predicted(load_cal_database) -> None:
     rf = load_cal_database
