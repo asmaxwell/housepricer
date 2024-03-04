@@ -13,6 +13,11 @@ def load_database() -> None:
     wr = hpt.wrangling("data/")
     yield wr
     return
+@pytest.fixture(scope='session') 
+def load_cal_database() -> None:
+    rf = hpt.wrangling("data/", None, True)
+    yield rf
+    return
 
 ###test __init__
 def test__init__(load_database) -> None:
@@ -143,9 +148,29 @@ def test_get_XY(load_database) -> None:
 def test_get_test_train_split(load_database) -> None:
     wr = load_database
     test_size = 0.5
-    wr.get_test_train_split(test_size)
-    assert(len(wr.X_test)>0)
-    assert(len(wr.X_test)==len(wr.y_test))
-    assert(len(wr.X_train)>0)
-    assert(len(wr.X_train)==len(wr.y_train))
-    assert(np.abs(test_size*len(wr.X_train) - (1-test_size)*len(wr.X_test)) <1e-3 * len(wr.X_test))
+    X_train, X_test, y_train, y_test = wr.get_test_train_split(test_size)
+    assert(len(X_test)>0)
+    assert(len(X_test)==len(y_test))
+    assert(len(X_train)>0)
+    assert(len(X_train)==len(y_train))
+    assert(np.abs(test_size*len(X_train) - (1-test_size)*len(X_test)) <1e-3 * len(X_test))
+
+def test_cal__init__(load_cal_database) -> None:
+    """
+    Test init for loading cal data
+    """
+    wr = load_cal_database
+    assert(len(wr.data)>0)
+    assert(len(wr.features) >0)
+    assert(len(wr.X)>0)
+    assert(len(wr.X)==len(wr.y))
+
+def test_cal_get_test_train_split(load_cal_database) -> None:
+    wr = load_cal_database
+    test_size = 0.5
+    X_train, X_test, y_train, y_test =  wr.get_test_train_split(test_size)
+    assert(len(X_test)>0)
+    assert(len(X_test)==len(y_test))
+    assert(len(X_train)>0)
+    assert(len(X_train)==len(y_train))
+    assert(np.abs(test_size*len(X_train) - (1-test_size)*len(X_test)) <1e-3 * len(X_test))

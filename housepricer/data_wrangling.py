@@ -6,8 +6,6 @@ import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
 from sklearn.datasets import fetch_california_housing
 from . import better_postcodes as bpc
-import matplotlib.pyplot as plt
-from sklearn.metrics import PredictionErrorDisplay
 from sklearn import preprocessing
 from sklearn import model_selection
 
@@ -21,10 +19,6 @@ class wrangling:
     categorical_features : list[str]
     X : list[float]
     y : list[float]
-    X_train : list[float]
-    y_train : list[float]
-    X_test : list[float]
-    y_test : list[float]
 
     def __init__(self, data_directory: str
                  , postcode_directory : str = None
@@ -78,8 +72,8 @@ class wrangling:
         Do preprocessing, encoding and produce list for X and Y from Data
         """
         if self.load_cal_data:
-            self.X = self.data[0]
-            self.y = self.data[1]
+            self.X = self.data[0]#.values.tolist()
+            self.y = self.data[1]#.values.tolist()
         else:
             # split features into categorical and numerical
             X_dataframe, y_dataframe = self.data_pruning() if self.postcode_directory == None else self.data_pruning(self.postcode_directory) 
@@ -93,16 +87,16 @@ class wrangling:
             X_dataframe = self.data_encoding(X_dataframe)
             self.X = X_dataframe.values.tolist()
         return
-    def get_test_train_split(self, test_size: float = 0.1) -> None:
+    def get_test_train_split(self, test_size: float = 0.1) -> tuple[list]:
         """
         split data into test and train data sets
         """
         if len(self.X)>0 and len(self.y)>0:
             #test/train split
-            self.X_train, self.X_test, self.y_train, self.y_test = model_selection.train_test_split(self.X, self.y, test_size=test_size)
+            return model_selection.train_test_split(self.X, self.y, test_size=test_size)
         else:
             print("Error X and Y not filled yet!")
-        return
+            return () #returns empty tuple
 
     def data_pruning(self, postcode_directory: str = "data/codepo_gb/Data/CSV/") -> pd.DataFrame:
         """
@@ -143,7 +137,7 @@ class wrangling:
     def data_encoding(self, X_dataframe : pd.DataFrame, min_freq : int = 15)  -> pd.DataFrame:
         """
         Encode the categorical features of the data
-        data : panda data frame
+        X_dataframe : panda data frame output of processing self.data with self.data_pruning()
         categorical_features : list of strings for categorical features
         numerical_features : list of strings for numerical features
         """
@@ -158,34 +152,3 @@ class wrangling:
         #merge back together and return
         return pd.concat([X_categorical, X_numerical], axis="columns")
 
-
-    def plot_cross_validated_pred(self, y:list, y_pred:list, filename : str = None) -> None:
-        """
-        Function to use matlib plot to show predicted vs true y and the residuals
-        """
-        fig, axs = plt.subplots(ncols=2, figsize=(8, 4))
-        PredictionErrorDisplay.from_predictions(
-            y,
-            y_pred=y_pred,
-            kind="actual_vs_predicted",
-            subsample=100,
-            ax=axs[0],
-            random_state=0,
-        )
-        axs[0].set_title("Actual vs. Predicted values")
-        PredictionErrorDisplay.from_predictions(
-            y,
-            y_pred=y_pred,
-            kind="residual_vs_predicted",
-            subsample=100,
-            ax=axs[1],
-            random_state=0,
-        )
-        axs[1].set_title("Residuals vs. Predicted Values")
-        fig.suptitle("Plotting cross-validated predictions")
-        plt.tight_layout()
-        if filename == None:
-            plt.show()
-        else:
-            print(filename)
-            plt.savefig(filename, format='png')

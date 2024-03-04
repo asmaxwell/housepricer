@@ -27,33 +27,13 @@ def hist_model() -> None:
     yield rf
     return
 
-### 1 - test __init__
+### test __init__
 def test__init__(load_database) -> None:
     """
     This test also tests .load_data() and .load_model()
     """
     rf = load_database
-    assert(len(rf.data)>0)
     assert(rf.model_filename == None or rf.model != None)
-    assert(len(rf.features) >0)
-    assert(len(rf.numerical_features) >0)
-    assert(len(rf.categorical_features) >0)
-
-### 2 - test def get_XY(self) -> None:
-def test_get_XY(load_database) -> None:
-    rf = load_database
-    assert(len(rf.X)>0)
-    assert(len(rf.X)==len(rf.y))
-
-def test_get_test_train_split(load_database) -> None:
-    rf = load_database
-    test_size = 0.5
-    rf.get_test_train_split(test_size)
-    assert(len(rf.X_test)>0)
-    assert(len(rf.X_test)==len(rf.y_test))
-    assert(len(rf.X_train)>0)
-    assert(len(rf.X_train)==len(rf.y_train))
-    assert(np.abs(test_size*len(rf.X_train) - (1-test_size)*len(rf.X_test)) <1e-3 * len(rf.X_test))
 
 def test_set_model_params(load_database) -> None:
     rf = load_database
@@ -71,11 +51,7 @@ def test_set_hist_model(hist_model):
     Test init forHist Model
     """
     rf = hist_model
-    assert(len(rf.data)>0)
     assert(rf.model_filename == None or rf.model != None)
-    assert(len(rf.features) >0)
-    assert(len(rf.X)>0)
-    assert(len(rf.X)==len(rf.y))
 
 
 @pytest.mark.slow
@@ -105,16 +81,12 @@ def test_save_true_vs_predicted(load_database) -> None:
     assert(os.path.isfile("./test_TruePred.png"))
 
 #test cal test data
-    def test_cal__init__(load_cal_database) -> None:
-        """
-        Test init for loading cal data
-        """
-        rf = load_cal_database
-        assert(len(rf.data)>0)
-        assert(rf.model_filename == None or rf.model != None)
-        assert(len(rf.features) >0)
-        assert(len(rf.X)>0)
-        assert(len(rf.X)==len(rf.y))
+def test_cal__init__(load_cal_database) -> None:
+    """
+    Test init for loading cal data
+    """
+    rf = load_cal_database
+    assert(rf.model_filename == None or rf.model != None)
 
 def test_cal_get_test_train_split(load_cal_database) -> None:
     rf = load_cal_database
@@ -124,7 +96,9 @@ def test_cal_get_test_train_split(load_cal_database) -> None:
     assert(len(rf.X_test)==len(rf.y_test))
     assert(len(rf.X_train)>0)
     assert(len(rf.X_train)==len(rf.y_train))
-    assert(np.abs(test_size*len(rf.X_train) - (1-test_size)*len(rf.X_test)) <1e-3 * len(rf.X_test))
+    lval = np.abs(test_size*len(rf.X_train) - (1-test_size)*len(rf.X_test))
+    rval = 1e-3 * len(rf.X_test)
+    assert(lval < rval)
 
 @pytest.mark.slow
 def test_cal_random_hyperparameter_search(load_cal_database) -> None:
