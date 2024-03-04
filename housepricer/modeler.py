@@ -32,7 +32,7 @@ class trainer:
     model_type : ABCMeta
     model : BaseEstimator
     model_scaler : preprocessing.MinMaxScaler
-    data : list[float]
+    data : pd.DataFrame
     features : list[str]
     numerical_features : list[str]
     categorical_features : list[str]
