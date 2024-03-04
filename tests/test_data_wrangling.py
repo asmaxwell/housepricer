@@ -2,14 +2,37 @@
 Created by Andy S Maxwell 19/10/2023
 Test file for house price trainer
 """
+import pytest
+import numpy as np
 import pandas as pd
 import housepricer.data_wrangling as hpt
 
-### 1 - def data_pruning(house_data : pd.DataFrame, feature_list : list[str]) -> None:
-def test_data_pruning_features() -> None:
+### setup - load database
+@pytest.fixture(scope='session') 
+def load_database() -> None:
+    wr = hpt.wrangling("data/")
+    yield wr
+    return
+
+###test __init__
+def test__init__(load_database) -> None:
+    """
+    This test also tests .load_data() and .load_model()
+    """
+    wr = load_database
+    assert(len(wr.data)>0)
+    assert(len(wr.features) >0)
+    assert(len(wr.numerical_features) >0)
+    assert(len(wr.categorical_features) >0)
+    return
+
+
+### def data_pruning(house_data : pd.DataFrame, feature_list : list[str]) -> None:
+def test_data_pruning_features(load_database) -> None:
     """
     Tests if the correct features are in the DataFrame
     """
+    wr = load_database
     #make test dataframe
     data = {
     "calories": [420, 380, 390],
@@ -22,14 +45,17 @@ def test_data_pruning_features() -> None:
     #select keys/ features
     keys = ["calories", "weight", "year", "month", "day"]
     #prune to these features
-    df_pruned, y_DF = hpt.data_pruning(df, keys)
+    wr.data = df
+    wr.features = keys
+    df_pruned, y_DF = wr.data_pruning()
     for feature, key in zip(df_pruned.keys(), keys):
         assert feature == key
 
-def test_data_pruning_check_dates() -> None:
+def test_data_pruning_check_dates(load_database) -> None:
     """
     Test if the dates are converted correctly
     """
+    wr = load_database
     #make test dataframe
     data = {
     "price_paid": [5, 15, 20],
@@ -38,7 +64,9 @@ def test_data_pruning_check_dates() -> None:
     df = pd.DataFrame(data, index=["day1", "day2", "day3"])
     keys = ["year", "month", "day"]
     #prune to these features
-    df_pruned, y_DF = hpt.data_pruning(df, keys)
+    wr.data = df
+    wr.features = keys
+    df_pruned, y_DF = wr.data_pruning()
     
     #manually added data for year days month to check
     days = [5, 7, 14]
@@ -50,10 +78,11 @@ def test_data_pruning_check_dates() -> None:
         assert day == df_day
         assert month == df_month
         assert year == df_year
-def test_data_pruning_postcode() -> None:
+def test_data_pruning_postcode(load_database) -> None:
     """
     Test postcodes converted correctly
     """
+    wr = load_database
     #make test dataframe
     data = {
     "postcode": ["BS1 2AN", "BS8 1TQ", "BS8 3PH", "NR17 2LP"],
@@ -62,7 +91,9 @@ def test_data_pruning_postcode() -> None:
     }
     df = pd.DataFrame(data)
     #prune to these features
-    df_pruned, y_DF = hpt.data_pruning(df, ["latitude", "longitude"])
+    wr.data = df
+    wr.features = ["latitude", "longitude"]
+    df_pruned, y_DF = wr.data_pruning()
     df_pruned = df_pruned.sort_values(by = "latitude").reset_index(drop=True)
     print(df_pruned)
     assert df_pruned.loc[0, "latitude"] == 355944
@@ -76,11 +107,12 @@ def test_data_pruning_postcode() -> None:
     assert df_pruned.loc[3, "longitude"] == 295701
 
 
-### 2 - def data_encoding(house_data: pd.DataFrame, categorical_features : list[str], numerical_features : list[str])  -> pd.DataFrame:
-def test_data_encoding_categories() -> None:
+###def data_encoding(house_data: pd.DataFrame, categorical_features : list[str], numerical_features : list[str])  -> pd.DataFrame:
+def test_data_encoding_categories(load_database) -> None:
     """
     check categories encoded in simple example
     """
+    wr = load_database
     #make test dataframe
     data = {
     "calories": [420, 380, 390],
@@ -89,7 +121,9 @@ def test_data_encoding_categories() -> None:
     "type" : ["hard", "soft", "hard"]
     }
     df = pd.DataFrame(data, index=["day1", "day2", "day3"])
-    df_encoded = hpt.data_encoding(df, ["type"], ["calories", "weight", "duration"], 1)
+    wr.categorical_features = ["type"]
+    wr.numerical_features = ["calories", "weight", "duration"]
+    df_encoded = wr.data_encoding(df, 1)
     print(df_encoded)
     
     assert(df_encoded.loc["day1",0]==1.0)
@@ -100,4 +134,18 @@ def test_data_encoding_categories() -> None:
     assert(df_encoded.loc["day3",1]==0.0)
 
 
-# tests for plot_cross_validated_pred(y:list, y_pred:list) -> None:
+### 2 - test def get_XY(self) -> None:
+def test_get_XY(load_database) -> None:
+    wr = load_database
+    assert(len(wr.X)>0)
+    assert(len(wr.X)==len(wr.y))
+
+def test_get_test_train_split(load_database) -> None:
+    wr = load_database
+    test_size = 0.5
+    wr.get_test_train_split(test_size)
+    assert(len(wr.X_test)>0)
+    assert(len(wr.X_test)==len(wr.y_test))
+    assert(len(wr.X_train)>0)
+    assert(len(wr.X_train)==len(wr.y_train))
+    assert(np.abs(test_size*len(wr.X_train) - (1-test_size)*len(wr.X_test)) <1e-3 * len(wr.X_test))

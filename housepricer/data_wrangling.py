@@ -1,110 +1,191 @@
 """
 Created by Andy S Maxwell 19/10/2023
-Script to train model on house prices in Bristol
+Class to deal with data on house prices in Bristol for training ensemble decision tree models
 """
 import pandas as pd
 pd.options.mode.chained_assignment = None  # default='warn'
-#import pgeocode as pgc
+from sklearn.datasets import fetch_california_housing
 from . import better_postcodes as bpc
 import matplotlib.pyplot as plt
 from sklearn.metrics import PredictionErrorDisplay
 from sklearn import preprocessing
+from sklearn import model_selection
 
+class wrangling:
+    load_cal_data : bool
+    data_directory : str
+    postcode_directory : str
+    data : pd.DataFrame
+    features : list[str]
+    numerical_features : list[str]
+    categorical_features : list[str]
+    X : list[float]
+    y : list[float]
+    X_train : list[float]
+    y_train : list[float]
+    X_test : list[float]
+    y_test : list[float]
 
+    def __init__(self, data_directory: str
+                 , postcode_directory : str = None
+                 , load_cal_data : bool = False
+                 )  ->None:
+        """
+            Init function, loading data, and postcodes. Test californian data can be loaded if specified
+        """
+        self.load_cal_data = load_cal_data
+        self.data_directory = None if load_cal_data else data_directory
+        self.postcode_directory = postcode_directory
+        self.load_data()
 
-def data_pruning(house_data : pd.DataFrame, features : list[str], postcode_directory: str = "data/codepo_gb/Data/CSV/") -> pd.DataFrame:
-    """
-    Remove unnecessary features from data
-    house_data: data (by view) to operate on directly
-    features: the features that will be kept (ideally this will include the new features year, day and month)
-    """
-    if "latitude" in features or "longitude" in features:
-        print("converting postcodes")
-        #convert postcode to latitude and longitude
-        # nomi = pgc.Nominatim('GB') #set country
-        # #get list of postcodes only
-        # postcode_list = house_data.loc[:,'postcode'].values.tolist()
-        # geocode_data = nomi.query_postal_code(postcode_list)
+        if self.load_cal_data:
+            #cal features
+            self.features = self.data[0].index
+        else:
+            # select and engineer features
+            self.features = ['year', 'month', 'day', 'latitude', 'longitude'
+                ,'property_type','new_build', 'estate_type'
+                , 'transaction_category']
 
-        # #add lats and longs
-        # house_data.loc[:,'latitude'] = geocode_data.loc[:,'latitude']
-        # house_data.loc[:,'longitude'] = geocode_data.loc[:,'longitude']
-        # pd.set_option("display.precision", 14)
-        #print(house_data)
-        converter = bpc.better_postcodes(postcode_directory)
-        postcode_list = house_data.loc[:,'postcode'].values.tolist()
-        df_coords = converter.query_postcodes(postcode_list)
-        house_data.loc[:,'latitude'] = df_coords.loc[:,'Eastings'] #similar to lat and long (Eastings and Northings)
-        house_data.loc[:,'longitude'] = df_coords.loc[:,'Northings']
+            # use dummy encoding for categories
+            self.numerical_features = ['year', 'month', 'day', 'latitude', 'longitude']
+            self.categorical_features = ['property_type', 'new_build','estate_type','transaction_category']
 
+        self.get_XY()
+        self.get_test_train_split(0.1)
 
-        #remove missing postcodes
-        house_data = house_data[house_data.loc[:,'longitude'].notna()]
+        return
+    def load_data(self) -> None:
+        """
+        Function to load house price data as member variable
+        """
+        if self.load_cal_data:
+            X, y = fetch_california_housing(return_X_y=True, as_frame=True)
+            data = [X, y]
+        else:
+            data = pd.read_csv(self.data_directory + "ppd_data.csv")
+            # remove NaN and scale price
+            data = data[data.loc[:,'postcode'].notna()]
 
-    if "day" in features or "month" in features or "year" in features:
-        # get dates data
-        house_data_dates = pd.DatetimeIndex(house_data.loc[:,'deed_date'], dayfirst=True)
-        
-        #split dates into three features year, month, and day, as more useful like this
-        year_column = house_data_dates.year
-        month_column = house_data_dates.month
-        week_day_column = house_data_dates.day
+            # scale price paid in millions
+            data.loc[:,'price_paid'] = data.loc[:,'price_paid']/1.0e6
 
-        #add features
-        house_data.loc[:,'year']=year_column
-        house_data.loc[:,'month']=month_column
-        house_data.loc[:,'day']=week_day_column
-
-    #prune down to selected features
-    house_data_pruned = house_data[features]
-    return house_data_pruned, house_data['price_paid']
-
-def data_encoding(house_data: pd.DataFrame, categorical_features : list[str], numerical_features : list[str], min_freq : int = 15)  -> pd.DataFrame:
-    """
-    Encode the categorical features of the data
-    house_data : input panda data frame
-    categorical_features : list of strings for categorical features
-    numerical_features : list of strings for numerical features
-    """
-    X_numerical = house_data.loc[:,numerical_features]
-    X_categorical = house_data.loc[:,categorical_features]
-    row_names = X_categorical.index
-    #encoding
-    drop_enc = preprocessing.OneHotEncoder(min_frequency=1).fit(X_categorical.values.tolist())#preprocessing.OneHotEncoder(drop='first',handle_unknown='error',min_frequency=1).fit(X_categorical.values.tolist())
-    X_categorical_transformed = drop_enc.transform(X_categorical.values.tolist()).toarray()
-    X_categorical = pd.DataFrame(X_categorical_transformed, index=row_names)
+        self.data = data
+        return
     
-    #merge back together and return
-    return pd.concat([X_categorical, X_numerical], axis="columns")
+    def get_XY(self) -> None:
+        """
+        Do preprocessing, encoding and produce list for X and Y from Data
+        """
+        if self.load_cal_data:
+            self.X = self.data[0]
+            self.y = self.data[1]
+        else:
+            # split features into categorical and numerical
+            X_dataframe, y_dataframe = self.data_pruning() if self.postcode_directory == None else self.data_pruning(self.postcode_directory) 
+            
+            # keep subset of data for now
+            recent_years = X_dataframe['year']>1989 #data starts from around 1990.
+            X_dataframe = X_dataframe[recent_years]
+
+            self.y = y_dataframe.loc[recent_years].values.tolist()
+            #encode data
+            X_dataframe = self.data_encoding(X_dataframe)
+            self.X = X_dataframe.values.tolist()
+        return
+    def get_test_train_split(self, test_size: float = 0.1) -> None:
+        """
+        split data into test and train data sets
+        """
+        if len(self.X)>0 and len(self.y)>0:
+            #test/train split
+            self.X_train, self.X_test, self.y_train, self.y_test = model_selection.train_test_split(self.X, self.y, test_size=test_size)
+        else:
+            print("Error X and Y not filled yet!")
+        return
+
+    def data_pruning(self, postcode_directory: str = "data/codepo_gb/Data/CSV/") -> pd.DataFrame:
+        """
+        Remove unnecessary features from data
+        house_data: data (by view) to operate on directly
+        features: the features that will be kept (ideally this will include the new features year, day and month)
+        """
+        if "latitude" in self.features or "longitude" in self.features:
+            print("converting postcodes")
+            converter = bpc.better_postcodes(postcode_directory)
+            postcode_list = self.data.loc[:,'postcode'].values.tolist()
+            df_coords = converter.query_postcodes(postcode_list)
+            self.data.loc[:,'latitude'] = df_coords.loc[:,'Eastings'] #similar to lat and long (Eastings and Northings)
+            self.data.loc[:,'longitude'] = df_coords.loc[:,'Northings']
 
 
-def plot_cross_validated_pred(y:list, y_pred:list, filename : str = None) -> None:
-    """
-    Function to use matlib plot to show predicted vs true y and the residuals
-    """
-    fig, axs = plt.subplots(ncols=2, figsize=(8, 4))
-    PredictionErrorDisplay.from_predictions(
-        y,
-        y_pred=y_pred,
-        kind="actual_vs_predicted",
-        subsample=100,
-        ax=axs[0],
-        random_state=0,
-    )
-    axs[0].set_title("Actual vs. Predicted values")
-    PredictionErrorDisplay.from_predictions(
-        y,
-        y_pred=y_pred,
-        kind="residual_vs_predicted",
-        subsample=100,
-        ax=axs[1],
-        random_state=0,
-    )
-    axs[1].set_title("Residuals vs. Predicted Values")
-    fig.suptitle("Plotting cross-validated predictions")
-    plt.tight_layout()
-    if filename == None:
-        plt.show()
-    else:
-        print(filename)
-        plt.savefig(filename, format='png')
+            #remove missing postcodes
+            self.data = self.data[self.data.loc[:,'longitude'].notna()]
+
+        if "day" in self.features or "month" in self.features or "year" in self.features:
+            # get dates data
+            house_data_dates = pd.DatetimeIndex(self.data.loc[:,'deed_date'], dayfirst=True)
+            
+            #split dates into three features year, month, and day, as more useful like this
+            year_column = house_data_dates.year
+            month_column = house_data_dates.month
+            week_day_column = house_data_dates.day
+
+            #add features
+            self.data.loc[:,'year']=year_column
+            self.data.loc[:,'month']=month_column
+            self.data.loc[:,'day']=week_day_column
+
+        #prune down to selected features
+        house_data_pruned = self.data[self.features]
+        return house_data_pruned, self.data['price_paid']
+
+    def data_encoding(self, X_dataframe : pd.DataFrame, min_freq : int = 15)  -> pd.DataFrame:
+        """
+        Encode the categorical features of the data
+        data : panda data frame
+        categorical_features : list of strings for categorical features
+        numerical_features : list of strings for numerical features
+        """
+        X_numerical = X_dataframe.loc[:,self.numerical_features]
+        X_categorical = X_dataframe.loc[:,self.categorical_features]
+        row_names = X_categorical.index
+        #encoding
+        drop_enc = preprocessing.OneHotEncoder(min_frequency=min_freq).fit(X_categorical.values.tolist())#preprocessing.OneHotEncoder(drop='first',handle_unknown='error',min_frequency=1).fit(X_categorical.values.tolist())
+        X_categorical_transformed = drop_enc.transform(X_categorical.values.tolist()).toarray()
+        X_categorical = pd.DataFrame(X_categorical_transformed, index=row_names)
+        
+        #merge back together and return
+        return pd.concat([X_categorical, X_numerical], axis="columns")
+
+
+    def plot_cross_validated_pred(self, y:list, y_pred:list, filename : str = None) -> None:
+        """
+        Function to use matlib plot to show predicted vs true y and the residuals
+        """
+        fig, axs = plt.subplots(ncols=2, figsize=(8, 4))
+        PredictionErrorDisplay.from_predictions(
+            y,
+            y_pred=y_pred,
+            kind="actual_vs_predicted",
+            subsample=100,
+            ax=axs[0],
+            random_state=0,
+        )
+        axs[0].set_title("Actual vs. Predicted values")
+        PredictionErrorDisplay.from_predictions(
+            y,
+            y_pred=y_pred,
+            kind="residual_vs_predicted",
+            subsample=100,
+            ax=axs[1],
+            random_state=0,
+        )
+        axs[1].set_title("Residuals vs. Predicted Values")
+        fig.suptitle("Plotting cross-validated predictions")
+        plt.tight_layout()
+        if filename == None:
+            plt.show()
+        else:
+            print(filename)
+            plt.savefig(filename, format='png')
