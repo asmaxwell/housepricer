@@ -3,7 +3,10 @@ Created by Andy S Maxwell 11/02/2024
 Class to train, search hyper parameters, and deploy random forest models for Bristol House Price Project
 """
 
-#import pandas as pd
+from silence_tensorflow import silence_tensorflow
+#tensorflow is not actually used, it is just imported by the sklearn genetic package
+#The information and warning messages are suppressed to not confuse the user
+silence_tensorflow()
 import numpy as np
 from abc import ABCMeta
 from . import data_wrangling as hpt
@@ -22,7 +25,6 @@ from sklearn_genetic.space import Continuous, Integer
 import joblib
 
 class trainer:
-    #data_directory : str
     wrangler : hpt.wrangling
     model_directory : str
     model_args : dict
