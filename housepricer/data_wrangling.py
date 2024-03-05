@@ -62,6 +62,8 @@ class wrangling:
             data = data[data.loc[:,'postcode'].notna()]
 
             # scale price paid in millions
+            #convert to float from int to suppress pandas error message
+            data['price_paid'] = data['price_paid'].astype(float)
             data.loc[:,'price_paid'] = data.loc[:,'price_paid']/1.0e6
 
         self.data = data
