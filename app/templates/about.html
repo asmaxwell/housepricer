@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>{% block title %} The house pricer project: {% endblock %}</h2>
+    <p>This project is motivated by council tax rules that currently 
+        use the 1991 value of a house, with the aim to demonstrate that 
+        a simple estimator could be used to make this tax fairer.
+
+        The idea is to use ensemble tree methods on freely available data 
+        such as that from the land registry. The model is then accessible
+        through the form on the main housepricer page.
+    </p>
+
+{% endblock %}

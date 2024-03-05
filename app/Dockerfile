@@ -14,7 +14,7 @@ RUN pip install -r requirements.txt
 EXPOSE 5000
 ENV FLASK_APP=app.py
 
-# copy every content from the local file to the image
+# copy all content from the local file to the image
 COPY . .
 
 
