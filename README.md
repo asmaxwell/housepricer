@@ -4,7 +4,8 @@ This is a command line tool written in Python to train models for predicting hou
 
 # Installation
 The dependencies are listed in requirements.txt, and can be automatically installed using:
-`pip install -r requirements.txt`
+`pip install -r requirements.txt`.
+Ideally do this in a fresh virtual environment.
 
 # Basic Usage
 After downloading the repo open a terminal in the root housepricer directory. 
