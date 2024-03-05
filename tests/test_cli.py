@@ -3,8 +3,6 @@ Created by Andy S Maxwell 14/02/2024
 Test for cli interface for housepricer
 """
 import pytest
-import logging
-logging.getLogger('tensorflow').disabled = True 
 from os.path import exists
 from housepricer import cli
 

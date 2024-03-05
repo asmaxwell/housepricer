@@ -3,7 +3,7 @@ Created by Andy S Maxwell 11/02/2024
 Class to train, search hyper parameters, and deploy random forest models for Bristol House Price Project
 """
 
-from silence_tensorflow import silence_tensorflow
+from housepricer.debug import silence_tensorflow
 #tensorflow is not actually used, it is just imported by the sklearn genetic package
 #The information and warning messages are suppressed to not confuse the user
 silence_tensorflow()
