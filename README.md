@@ -1,6 +1,6 @@
 # Housepricer
 
-This is a command line tool written in Python to train models for predicting house prices.
+This is a command line tool written in Python to train models for predicting house prices and a dockerized Flask web app to deploy the model.
 
 # Installation
 The dependencies are listed in requirements.txt, and can be automatically installed using:

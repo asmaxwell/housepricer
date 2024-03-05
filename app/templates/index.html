@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Estimator {% endblock %}</h1>
+    <form action="" method="get">
+        <input type="text" name="celsius" />
+        <input type="submit" value="Convert" />
+    </form>
+    <h3>Estimated Cost: {% if fahrenheit %} £ {% endif %} {{fahrenheit}}</h3>
+{% endblock %}
