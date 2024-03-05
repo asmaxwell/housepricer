@@ -1,6 +1,10 @@
 # Housepricer
 
-This is a command line tool written in Python to train models for predicting house prices. It is currently a work in progress.
+This is a command line tool written in Python to train models for predicting house prices.
+
+# Installation
+The dependencies are listed in requirements.txt, and can be automatically installed using:
+`pip install -r requirements.txt`
 
 # Basic Usage
 After downloading the repo open a terminal in the root housepricer directory. 
