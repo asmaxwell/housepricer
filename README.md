@@ -12,7 +12,7 @@ After downloading the repo open a terminal in the root housepricer directory.
 
 Run: `python3 housepricer --data_dir data/ --model_dir data/ --hyperparameter_search random --iterations 150` for an example of setting hyperparameters with a random search
 
-Run: `python3 housepricer data/ data/ --hyperparameter_search evolve --population 50 --generations 25` for an example of setting hyperparameters with an evolutionary algorithm
+Run: `python3 housepricer --data_dir data/ --model_dir data/ --hyperparameter_search evolve --population 50 --generations 25` for an example of setting hyperparameters with an evolutionary algorithm
 
 If you want to run the californian test dataset use the flag `--load_cal True` for example you could run:
 

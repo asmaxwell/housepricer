@@ -56,7 +56,7 @@ class wrangling:
         if self.load_cal_data:
             X, y = fetch_california_housing(return_X_y=True, as_frame=True)
             data = [X, y]
-        else:
+        elif self.data_directory != None:
             data = pd.read_csv(self.data_directory + "ppd_data.csv")
             # remove NaN and scale price
             data = data[data.loc[:,'postcode'].notna()]
@@ -65,6 +65,8 @@ class wrangling:
             #convert to float from int to suppress pandas error message
             data['price_paid'] = data['price_paid'].astype(float)
             data.loc[:,'price_paid'] = data.loc[:,'price_paid']/1.0e6
+        else:
+            data = None
 
         self.data = data
         return

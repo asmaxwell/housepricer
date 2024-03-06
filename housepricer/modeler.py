@@ -22,6 +22,8 @@ from sklearn_genetic import GASearchCV
 from sklearn_genetic import ExponentialAdapter
 from sklearn.metrics import mean_squared_error
 from sklearn_genetic.space import Continuous, Integer
+from sklearn.utils.validation import check_is_fitted
+from sklearn.exceptions import NotFittedError
 import joblib
 
 class trainer:
@@ -183,7 +185,20 @@ class trainer:
         print(f"Average Test Error: {self.test_error()}")
         return
     
+    def is_model_fitted(self)->None:
+        some_test_data = [[0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 2021.0, 8.0, 10.0, 367118.0, 180928.0]]
+        try:
+            self.model.predict(some_test_data)
+        except NotFittedError as exc:
+            print(repr(exc))
+            raise
+        return
+        
     def predict_values(self, X_vals : list[float]) -> float:
+        try:
+            check_is_fitted(self.model)
+        except NotFittedError as exc:
+            print(f"Model is not fitted yet.")
         X_scaled = self.model_scaler.transform(X_vals)
         y_scaled = self.model.predict(X_scaled)
         return self.model_scaler.inverse_transform(y_scaled)

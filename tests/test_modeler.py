@@ -5,7 +5,8 @@ Test for model class to train random forest model
 import pytest
 import numpy as np
 from housepricer import modeler
-from sklearn_genetic.space import Continuous, Integer
+from sklearn.exceptions import NotFittedError
+#from sklearn_genetic.space import Continuous, Integer
 import os
 
 
@@ -45,6 +46,13 @@ def test_set_model_params(load_database) -> None:
     assert(rf.model.get_params()["randomforestregressor__max_depth"] == 21) 
     assert(rf.model.get_params()["randomforestregressor__max_features"] == 13) 
     assert(rf.model.get_params()["randomforestregressor__n_estimators"] == 57)
+
+def test_is_model_fitted(load_database) ->None:
+    rf = load_database
+    print(rf.X_train[0])
+    with pytest.raises(NotFittedError) as e_info:
+        rf.is_model_fitted()
+    assert(1==0)
 
 def test_set_hist_model(hist_model):
     """
