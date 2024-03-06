@@ -52,7 +52,6 @@ def test_is_model_fitted(load_database) ->None:
     print(rf.X_train[0])
     with pytest.raises(NotFittedError) as e_info:
         rf.is_model_fitted()
-    assert(1==0)
 
 def test_set_hist_model(hist_model):
     """
