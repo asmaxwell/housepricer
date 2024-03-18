@@ -23,7 +23,7 @@ def full_run_evolution(data_directory: str
     """
        
     print("loading data and setting up model")
-    model = modeler.trainer(data_directory, model_directory, None, postcode_directory, model_type)
+    model = modeler.trainer(data_directory, model_directory, None, postcode_directory, False, model_type)
 
     print("doing evolution hyperparameter search")
     model.evolve_hyperparameter_search(population_size, generations)
@@ -48,7 +48,7 @@ def full_run_random(data_directory: str
     # initiate model
        
     print("loading data and setting up model")
-    model = modeler.trainer(data_directory, model_directory, None, postcode_directory, model_type)
+    model = modeler.trainer(data_directory, model_directory, None, postcode_directory, False, model_type)
 
     print("doing evolution hyperparameter search")
     model.random_hyperparameter_search(iterations)

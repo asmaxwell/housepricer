@@ -20,6 +20,6 @@ If you want to run the californian test dataset use the flag `--load_cal True` f
 
 If you want to use the sklearn Histogram-based Gradient Boosting Regression Tree estimator instead of Random forest run
 
-`python3 housepricer --model_dir data/ --model_type notrandom --load_cal True --hyperparameter_search evolve --population 100 --generations 50`
+`python3 housepricer --data_dir data/ --model_dir data/ --model_type notrandom --load_cal False --hyperparameter_search evolve --population 100 --generations 50`
 
 Note currently the included Bristol (UK) dataset is only from the freely available LandRegistry, which does not provide key features such as the number of rooms, size, or overal state of a property. The sklearn Californian dataset include both number of rooms and area of each property, so can be trained to a higher r2 value.

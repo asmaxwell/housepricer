@@ -24,7 +24,8 @@ from sklearn.metrics import mean_squared_error
 from sklearn_genetic.space import Continuous, Integer
 from sklearn.utils.validation import check_is_fitted
 from sklearn.exceptions import NotFittedError
-import joblib
+#import joblib
+import dill
 
 class trainer:
     wrangler : hpt.wrangling
@@ -34,6 +35,7 @@ class trainer:
     model_type : ABCMeta
     model : BaseEstimator
     model_scaler : preprocessing.MinMaxScaler
+    model_searcher : BaseEstimator
     X_train : list[float]
     y_train : list[float]
     X_test : list[float]
@@ -56,6 +58,7 @@ class trainer:
         self.model_filename = model_filename
         self.model_directory = model_directory
         self.model_scaler = preprocessing.MinMaxScaler()
+        self.model_searcher = None
         if model_type == "random":
             self.model_type = RandomForestRegressor
             self.model_args = {
@@ -71,7 +74,7 @@ class trainer:
 
         if model_filename != None:
             self.load_model(model_filename)
-        else: #initalize default random forest model
+        else: #initalize model
             self.model = make_pipeline(self.model_scaler, self.model_type(**self.model_args))
 
         return
@@ -90,12 +93,19 @@ class trainer:
         """
         If a model has been previously trained and stored it can be loaded as a member variable 
         """
-        self.model = joblib.load(self.model_directory + filename)
+        with open(self.model_directory + filename, 'rb') as pickle_file:
+            self.model_searcher = dill.load(pickle_file, ignore=False)
+
+        self.model = self.model_searcher.best_estimator_
         self.model_filename = filename
         return
 
     def save_model(self, filename: str) -> None:
-        joblib.dump(self.model, self.model_directory + filename)
+        pickles = dill.pickles(self.model_searcher, exact=False, safe=False)
+        print(f"Does it pickle: {pickles}")
+        with open(self.model_directory + filename, 'wb') as pickle_file:
+            dill.dump(self.model_searcher, pickle_file)
+            #dill.dump_module(filename = self.model_directory + filename, module = self.model_searcher)
         return
     
     def set_model_params(self, model_params : dict) -> None:
@@ -135,6 +145,7 @@ class trainer:
                                 )
         
         rf_random.fit(self.X_train, self.y_train)
+        self.model_searcher = rf_random
         print(f"Best score: {rf_random.best_score_}")
         self.model = rf_random.best_estimator_
         print(f"Test Error: {self.test_error()}")
@@ -164,7 +175,6 @@ class trainer:
                     ,"histgradientboostingregressor__max_leaf_nodes": Integer(2, 100)
             }        
 
-
         regr = make_pipeline(self.model_scaler, self.model_type(**self.model_args))
         mutation_adapter = ExponentialAdapter(initial_value=0.8, end_value=0.2, adaptive_rate=0.1)
         crossover_adapter = ExponentialAdapter(initial_value=0.2, end_value=0.8, adaptive_rate=0.1)
@@ -179,8 +189,10 @@ class trainer:
                                n_jobs=n_jobs)
         
         evolved_estimator.fit(self.X_train, self.y_train)
+        self.model_searcher = evolved_estimator
         print(f"Best score: {evolved_estimator.best_score_}")
         self.model = evolved_estimator.best_estimator_
+        #self.model_scaler = evolved_estimator.sca
         print(f"Average Train Error: {self.train_error()}")
         print(f"Average Test Error: {self.test_error()}")
         return
@@ -188,7 +200,10 @@ class trainer:
     def is_model_fitted(self)->None:
         some_test_data = [[0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 2021.0, 8.0, 10.0, 367118.0, 180928.0]]
         try:
-            self.model.predict(some_test_data)
+            print(self.model_searcher)
+            #X_scaled = self.model_searcher.transform(some_test_data)
+            #self.model.predict(X_scaled)
+            print(self.model.predict(some_test_data))
         except NotFittedError as exc:
             print(repr(exc))
             raise
@@ -199,9 +214,9 @@ class trainer:
             check_is_fitted(self.model)
         except NotFittedError as exc:
             print(f"Model is not fitted yet.")
-        X_scaled = self.model_scaler.transform(X_vals)
-        y_scaled = self.model.predict(X_scaled)
-        return self.model_scaler.inverse_transform(y_scaled)
+        #X_scaled = self.model_searcher.transform(X_vals)
+        y_scaled = self.model.predict([X_vals])
+        return y_scaled * 1.0e+06 #self.model_searcher.inverse_transform(y_scaled)
     
     def test_error(self) -> float:
         y_pred = self.model.predict (self.X_test)

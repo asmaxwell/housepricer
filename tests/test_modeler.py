@@ -53,6 +53,15 @@ def test_is_model_fitted(load_database) ->None:
     with pytest.raises(NotFittedError) as e_info:
         rf.is_model_fitted()
 
+def test_load_data() ->None:
+    model = modeler.trainer("./data/", "./data/", "RandomModel.save", None, False, "notrandom")
+    model.is_model_fitted() #throw immediate exception if not fitted instead of at user input
+
+    model2 = modeler.trainer("./data/", "./data/", None, None, False, "notrandom")
+    with pytest.raises(NotFittedError) as e_info:
+        model2.is_model_fitted() #throw immediate exception if not fitted instead of at user input
+    return
+
 def test_set_hist_model(hist_model):
     """
     Test init forHist Model

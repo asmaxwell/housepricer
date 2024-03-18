@@ -5,11 +5,12 @@
     <form action="" method="get">
         <label for="date">Date (yyyy/mm/dd):</label>
         <input type="text" name="date" />
+        <br>
         
         <label for="postcode">Postcode:</label>
-        <input type="text" name="postcode" />
-        
+        <input type="text" name="postcode" />        
         <br>
+
         <label for="housetype">Type of House:</label>        
         <select id="housetype" name="housetype">
             <option value="flat">flat</option>
@@ -17,12 +18,14 @@
             <option value="semi-detached">semi-detached</option>
             <option value="detached">detached</option>
         </select>
+        <br>
 
         <label for="newbuild">New Build:</label>
         <select id="newbuild" name="newbuild">
             <option value="yes">yes</option>
             <option value="no">no</option>
         </select>
+        <br>
 
         <label for="estatetype">Estate Type:</label>
         <select id="estatetype" name="estatetype">
@@ -30,6 +33,7 @@
             <option value="type2">type2</option>
             <option value="type3">type3</option>
         </select>
+        <br>
 
         <label for="transactiontype">Transaction Type:</label>
         <select id="transactiontype" name="transactiontype">
@@ -37,6 +41,8 @@
             <option value="type2">type2</option>
             <option value="type3">type3</option>
         </select>
+        <br>
+        
         <input type="submit" value="Convert" />
     </form>
     <h3>{{stringOut}}</h3>
