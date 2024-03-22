@@ -24,7 +24,7 @@ def prediction_string(data: dict, model : modeler.trainer) -> str:
     if (data["date"]!="") and (data["postcode"]!=""):
         parsed_data = parse_data(data)
         #print(parsed_data)
-        model_pred = model.predict_values(parsed_data)
+        model_pred = max([2000], model.predict_values(parsed_data) )
         #print(model_pred)
         stringOut=f"Prediction: £{model_pred[0]:,.0f}"
     return stringOut
