@@ -6,7 +6,7 @@ from app import app
 from housepricer import modeler
 
 def test_parse_data() -> None:
-    test_data = {"date" : "05/01/2021"
+    test_data = {"date" : "2021-01-05"
                  ,"postcode" :  "BS8 1TQ"
                  , "housetype" : "S", "newbuild" : "No"
                  , "estatetype" : "Leasehold", "transactiontype" : "B"}
@@ -16,7 +16,7 @@ def test_parse_data() -> None:
 def test_prediction_string() -> None:
     model = modeler.trainer("./data/", "./data/", "RandomModel.save", None, False, "notrandom")
     model.is_model_fitted()
-    test_data = {"date" : "05/01/2022"
+    test_data = {"date" : "2021-01-05"
                  ,"postcode" :  "BS8 1TQ"
                  , "housetype" : "O", "newbuild" : "Yes"
                  , "estatetype" : "Leasehold", "transactiontype" : "A"}
