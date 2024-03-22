@@ -3,7 +3,7 @@
 {% block content %}
     <h1>{% block title %} Estimator {% endblock %}</h1>
     <form action="" method="get">
-        <label for="date">Date (yyyy/mm/dd):</label>
+        <label for="date">Date (dd/mm/yyyy):</label>
         <input type="text" name="date" />
         <br>
         
@@ -13,33 +13,32 @@
 
         <label for="housetype">Type of House:</label>        
         <select id="housetype" name="housetype">
-            <option value="flat">flat</option>
-            <option value="terrace">terrace</option>
-            <option value="semi-detached">semi-detached</option>
-            <option value="detached">detached</option>
+            <option value="F">flat</option>
+            <option value="T">terrace</option>
+            <option value="S">semi-detached</option>
+            <option value="D">detached</option>
+            <option value="O">other</option>
         </select>
         <br>
 
         <label for="newbuild">New Build:</label>
         <select id="newbuild" name="newbuild">
-            <option value="yes">yes</option>
-            <option value="no">no</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
         </select>
         <br>
 
         <label for="estatetype">Estate Type:</label>
         <select id="estatetype" name="estatetype">
-            <option value="type1">type1</option>
-            <option value="type2">type2</option>
-            <option value="type3">type3</option>
+            <option value="Freehold">Freehold</option>
+            <option value="Leasehold">Leasehold</option>
         </select>
         <br>
 
         <label for="transactiontype">Transaction Type:</label>
         <select id="transactiontype" name="transactiontype">
-            <option value="type1">type1</option>
-            <option value="type2">type2</option>
-            <option value="type3">type3</option>
+            <option value="A">Standard (A)</option>
+            <option value="B">Additional (B)</option>
         </select>
         <br>
         

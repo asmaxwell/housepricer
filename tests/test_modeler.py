@@ -141,3 +141,12 @@ def test_cal_save_true_vs_predicted(load_cal_database) -> None:
     rf.save_true_vs_predicted("TruePred.png")
     assert(os.path.isfile("data/train_TruePred.png"))
     assert(os.path.isfile("data/test_TruePred.png"))
+
+
+def test_predict_values():
+    model = modeler.trainer("./data/", "./data/", "RandomModel.save", None, False, "notrandom")
+    model.is_model_fitted()
+    X_val = [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 2015, 1, 8, 358322, 173531]
+    val = model.predict_values(X_val)[0]
+    print(val)
+    assert 1==2

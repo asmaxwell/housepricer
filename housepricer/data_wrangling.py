@@ -8,12 +8,16 @@ from sklearn.datasets import fetch_california_housing
 from . import better_postcodes as bpc
 from sklearn import preprocessing
 from sklearn import model_selection
+import dill
 
 class wrangling:
     load_cal_data : bool
     data_directory : str
+    enc_directory : str
+    enc_filename :str
     postcode_directory : str
     data : pd.DataFrame
+    drop_enc : preprocessing.OneHotEncoder
     features : list[str]
     numerical_features : list[str]
     categorical_features : list[str]
@@ -21,6 +25,8 @@ class wrangling:
     y : list[float]
 
     def __init__(self, data_directory: str
+                 , enc_directory : str
+                 , enc_filename : str = None
                  , postcode_directory : str = None
                  , load_cal_data : bool = False
                  )  ->None:
@@ -29,7 +35,11 @@ class wrangling:
         """
         self.load_cal_data = load_cal_data
         self.data_directory = None if load_cal_data else data_directory
+        self.enc_directory = enc_directory
+        if enc_filename != None:
+            self.load_encoder(enc_filename)
         self.postcode_directory = postcode_directory
+        
         self.load_data()
 
         if self.load_cal_data:
@@ -44,9 +54,10 @@ class wrangling:
             # use dummy encoding for categories
             self.numerical_features = ['year', 'month', 'day', 'latitude', 'longitude']
             self.categorical_features = ['property_type', 'new_build','estate_type','transaction_category']
-
-        self.get_XY()
-        self.get_test_train_split(0.1)
+        if ((self.data_directory!=None) or self.load_cal_data):
+            print(self.data_directory)
+            self.get_XY()
+            self.get_test_train_split(0.1)
 
         return
     def load_data(self) -> None:
@@ -149,10 +160,37 @@ class wrangling:
         X_categorical = X_dataframe.loc[:,self.categorical_features]
         row_names = X_categorical.index
         #encoding
-        drop_enc = preprocessing.OneHotEncoder(min_frequency=min_freq).fit(X_categorical.values.tolist())#preprocessing.OneHotEncoder(drop='first',handle_unknown='error',min_frequency=1).fit(X_categorical.values.tolist())
-        X_categorical_transformed = drop_enc.transform(X_categorical.values.tolist()).toarray()
+        self.drop_enc = preprocessing.OneHotEncoder(min_frequency=min_freq).fit(X_categorical.values.tolist())#preprocessing.OneHotEncoder(drop='first',handle_unknown='error',min_frequency=1).fit(X_categorical.values.tolist())
+        
+        self.save_encoder("Encoder.save")
+        X_categorical_transformed = self.drop_enc.transform(X_categorical.values.tolist()).toarray()
         X_categorical = pd.DataFrame(X_categorical_transformed, index=row_names)
         
         #merge back together and return
         return pd.concat([X_categorical, X_numerical], axis="columns")
+    
+    def apply_encoder(self, X_data : list) -> list:
+        X_dataframe = pd.DataFrame(data = X_data, columns = self.features)
+        X_numerical = X_dataframe.loc[:,self.numerical_features]
+        X_categorical = X_dataframe.loc[:,self.categorical_features]
+        X_categorical_transformed = self.drop_enc.transform(X_categorical.values.tolist()).toarray().tolist()
+
+        return [X+Y for X, Y in zip(X_categorical_transformed, X_numerical.values.tolist())]
+    
+    def load_encoder(self, filename: str) -> None:
+        """
+        If an encoder has been previously trained and stored it can be loaded as a member variable 
+        """
+        with open(self.enc_directory + filename, 'rb') as pickle_file:
+            self.drop_enc = dill.load(pickle_file, ignore=False)
+
+        self.enc_filename = filename
+        return
+    
+    def save_encoder(self, filename: str) -> None:
+        pickles = dill.pickles(self.drop_enc, exact=False, safe=False)
+        print(f"Does it pickle: {pickles}")
+        with open(self.enc_directory + filename, 'wb') as pickle_file:
+            dill.dump(self.drop_enc, pickle_file)
+        return
 

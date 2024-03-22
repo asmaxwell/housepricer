@@ -10,12 +10,12 @@ import housepricer.data_wrangling as hpt
 ### setup - load database
 @pytest.fixture(scope='session') 
 def load_database() -> None:
-    wr = hpt.wrangling("data/")
+    wr = hpt.wrangling("data/", "data/")
     yield wr
     return
 @pytest.fixture(scope='session') 
 def load_cal_database() -> None:
-    rf = hpt.wrangling("data/", None, True)
+    rf = hpt.wrangling("data/", "data/", None, None, True)
     yield rf
     return
 
@@ -174,3 +174,12 @@ def test_cal_get_test_train_split(load_cal_database) -> None:
     assert(len(X_train)>0)
     assert(len(X_train)==len(y_train))
     assert(np.abs(test_size*len(X_train) - (1-test_size)*len(X_test)) <1e-3 * len(X_test))
+
+
+def test_apply_encoder() -> None:
+    wrangler = hpt.wrangling("data/", "data/", "Encoder.save")
+    test_data = [[2021, 1, 5, 358322, 173531, "S", "N", "L", "B"]]
+
+    encoded_data = wrangler.apply_encoder(test_data)[0]
+
+    assert encoded_data == [0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 2021, 1, 5, 358322, 173531]

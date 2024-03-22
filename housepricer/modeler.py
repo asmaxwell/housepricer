@@ -52,8 +52,9 @@ class trainer:
         """
             Init function, loading data, postcodes, and model if supplied. Test californian data can be loaded if specified
         """
-        self.wrangler = hpt.wrangling(data_directory, postcode_directory, load_cal_data)
-        self.get_test_train_split(0.1)
+        self.wrangler = hpt.wrangling(data_directory, model_directory, None, postcode_directory, load_cal_data)
+        if data_directory!=None:
+            self.get_test_train_split(0.1)
 
         self.model_filename = model_filename
         self.model_directory = model_directory
@@ -200,10 +201,10 @@ class trainer:
     def is_model_fitted(self)->None:
         some_test_data = [[0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 2021.0, 8.0, 10.0, 367118.0, 180928.0]]
         try:
-            print(self.model_searcher)
+            #print(self.model_searcher)
             #X_scaled = self.model_searcher.transform(some_test_data)
             #self.model.predict(X_scaled)
-            print(self.model.predict(some_test_data))
+            self.model.predict(some_test_data)
         except NotFittedError as exc:
             print(repr(exc))
             raise
@@ -215,7 +216,7 @@ class trainer:
         except NotFittedError as exc:
             print(f"Model is not fitted yet.")
         #X_scaled = self.model_searcher.transform(X_vals)
-        y_scaled = self.model.predict([X_vals])
+        y_scaled = self.model_searcher.predict([X_vals])
         return y_scaled * 1.0e+06 #self.model_searcher.inverse_transform(y_scaled)
     
     def test_error(self) -> float:
