@@ -148,5 +148,5 @@ def test_predict_values():
     model.is_model_fitted()
     X_val = [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 2015, 1, 8, 358322, 173531]
     val = model.predict_values(X_val)[0]
-    print(val)
-    assert 1==2
+    #print(val)
+    assert ( (val>1000) and (val<10000000) )

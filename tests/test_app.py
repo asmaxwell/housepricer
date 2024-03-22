@@ -26,5 +26,5 @@ def test_prediction_string() -> None:
     assert model_pred_string[0:13]=="Prediction: £"
 
     val = float(model_pred_string[13:].replace(',',''))
-    print(val)
-    assert 1==2#( (val>1000) and (val<10000000) )
+    #print(val)
+    assert ( (val>1000) and (val<10000000) )
