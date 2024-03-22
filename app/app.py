@@ -13,8 +13,9 @@ def index():
     item_list = ["date", "postcode", "housetype", "newbuild", "estatetype", "transactiontype"]
     data_list = {item : request.args.get(item, "") for item in item_list}
     
+    #print(data_list)
     model_pred_string=prediction_string(data_list, model)
-    print(model_pred_string)    
+    #print(model_pred_string)    
     
     return render_template('index.html', stringOut=model_pred_string)
 
@@ -22,15 +23,15 @@ def prediction_string(data: dict, model : modeler.trainer) -> str:
     stringOut=""
     if (data["date"]!="") and (data["postcode"]!=""):
         parsed_data = parse_data(data)
-        print(parsed_data)
+        #print(parsed_data)
         model_pred = model.predict_values(parsed_data)
-        print(model_pred)
+        #print(model_pred)
         stringOut=f"Prediction: £{model_pred[0]:,.0f}"
     return stringOut
 
 def parse_data(data : dict) -> list:
     datestr = data["date"]
-    date = datetime.strptime(datestr, '%d/%m/%Y')
+    date = datetime.strptime(datestr, '%Y-%m-%d')
 
     converter = bpc.better_postcodes('data/codepo_gb/Data/CSV/')
     coords = converter.query_postcodes([data["postcode"]])

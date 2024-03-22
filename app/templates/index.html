@@ -1,48 +1,74 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>{% block title %} Estimator {% endblock %}</h1>
-    <form action="" method="get">
-        <label for="date">Date (dd/mm/yyyy):</label>
-        <input type="text" name="date" />
-        <br>
-        
-        <label for="postcode">Postcode:</label>
-        <input type="text" name="postcode" />        
-        <br>
+    <!--<h1>{% block title %} Housepricer {% endblock %}</h1>-->
 
-        <label for="housetype">Type of House:</label>        
-        <select id="housetype" name="housetype">
-            <option value="F">flat</option>
-            <option value="T">terrace</option>
-            <option value="S">semi-detached</option>
-            <option value="D">detached</option>
-            <option value="O">other</option>
-        </select>
-        <br>
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title">Housepricer Estimator</h3>
+        <form action="" method="get">
+            <div class="mb-3">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="date" class="form-label">Date:</label>
+                        <input type="date" class="form-control" name="date" id="date" placeholder="dd/mm/yyyy">
+                    </div>
+                    <div class="col-md-6">        
+                        <label for="postcode" class="form-label">Postcode:</label>
+                        <input type="text" class="form-control" name="postcode" id="postcode" placeholder="e.g. BS1 3RD">  
+                    </div>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">        
+                        <label for="housetype">Type of House:</label>        
+                        <select class="form-select" aria-label="Default select example" id="housetype" name="housetype">
+                            <option value="F">flat</option>
+                            <option value="T">terrace</option>
+                            <option value="S">semi-detached</option>
+                            <option value="D">detached</option>
+                            <option value="O">other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="newbuild">New Build:</label>
+                        <select class="form-select" aria-label="Default select example"  id="newbuild" name="newbuild">
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                </div>
+            </div> 
+            
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="estatetype">Estate Type:</label>
+                    <select class="form-select" id="estatetype" name="estatetype">
+                        <option value="Freehold">Freehold</option>
+                        <option value="Leasehold">Leasehold</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="transactiontype">Transaction Type:</label>
+                    <select class="form-select" id="transactiontype" name="transactiontype">
+                        <option value="A">Standard (A)</option>
+                        <option value="B">Additional (B)</option>
+                    </select>
+                </div> 
+            </div>
+            <br>
+            <div class="row g-3">
+                <div class="col-1">
+                    <button type="submit" class="btn btn-primary" >Convert</button>
+                </div>
+                <div class="col-3">
+                    <p class="fs-4">{{stringOut}}</p>
+                </div>
+            </div> 
+        </form>
 
-        <label for="newbuild">New Build:</label>
-        <select id="newbuild" name="newbuild">
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-        </select>
-        <br>
+        </div>
+    </div>
 
-        <label for="estatetype">Estate Type:</label>
-        <select id="estatetype" name="estatetype">
-            <option value="Freehold">Freehold</option>
-            <option value="Leasehold">Leasehold</option>
-        </select>
-        <br>
 
-        <label for="transactiontype">Transaction Type:</label>
-        <select id="transactiontype" name="transactiontype">
-            <option value="A">Standard (A)</option>
-            <option value="B">Additional (B)</option>
-        </select>
-        <br>
-        
-        <input type="submit" value="Convert" />
-    </form>
-    <h3>{{stringOut}}</h3>
 {% endblock %}
