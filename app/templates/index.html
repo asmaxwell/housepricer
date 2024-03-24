@@ -3,9 +3,9 @@
 {% block content %}
     <!--<h1>{% block title %} Housepricer {% endblock %}</h1>-->
 
-    <div class="card">
+    <div class="card w-75 mb-3">
         <div class="card-body">
-            <h3 class="card-title">Housepricer Estimator</h3>
+            <h2 class="card-title">House Price Estimator</h2>
         <form action="" method="get">
             <div class="mb-3">
                 <div class="row g-3">
@@ -58,11 +58,13 @@
             </div>
             <br>
             <div class="row g-3">
-                <div class="col-1">
-                    <button type="submit" class="btn btn-primary" >Convert</button>
+                <div class="col-6">
+                    <button type="submit" class="btn-primary btn-lg" >
+                        Convert
+                    </button>
                 </div>
-                <div class="col-3">
-                    <p class="fs-4">{{stringOut}}</p>
+                <div class="col-6">
+                    <p class="fs-4 fw-bold">{{stringOut}}</p>
                 </div>
             </div> 
         </form>
