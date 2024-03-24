@@ -8,7 +8,14 @@ The dependencies are listed in requirements.txt, and can be automatically instal
 Ideally do this in a fresh virtual environment.
 
 # Basic Usage
-After downloading the repo open a terminal in the root housepricer directory. 
+After downloading the repo you may either run the flask web app to try out the model predictions or retrain the model using the command line interface.
+
+## Flask app
+To build the flask app you must have docker installed. Once you have installed docker, from the root directory run `docker compose up` and navigate in a web browser to the address mentioned, typically this is `127.0. 0.1:5000`. You should be greeted by a web form which you can use to request predictions from the model.
+
+## Command line interface (CLI)
+
+To use the CLI to retrain the model, open a terminal in the root housepricer directory. Then you may run the following commands:
 
 Run: `python3 housepricer --data_dir data/ --model_dir data/ --hyperparameter_search random --iterations 150` for an example of setting hyperparameters with a random search
 
