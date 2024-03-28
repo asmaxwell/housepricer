@@ -58,15 +58,26 @@
                 </div> 
             </div>
             <br>
-            <button type="submit" class="btn-primary btn-lg float-end" >
+            <button type="submit" class="btn-primary btn-lg float-end" onclick="spinner()">
                 Convert
             </button>
+            <div class="loader">
+                <div class="loading">
+                </div>
+            </div>
             <p class="fs-4 fw-bold">{{stringOut}}</p>
+            
             
         </form>
 
         </div>
     </div>
+
+    <script type="text/javascript">
+        function spinner() {
+            document.getElementsByClassName("loader")[0].style.display = "block";
+        }
+    </script> 
 
 
 {% endblock %}
