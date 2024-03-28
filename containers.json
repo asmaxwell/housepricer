@@ -1,0 +1,8 @@
+{
+    "housepricer": {
+        "image": ":housepricer-service.housepricer-container.1",
+        "ports": {
+            "5000": "HTTP"
+        }
+    }
+}

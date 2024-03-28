@@ -2,6 +2,9 @@
 # start by pulling the python image
 FROM python:3.11-slim-buster
 
+#add user to prevent sudo commands from docker container
+RUN useradd -r  -s /bin/bash andy
+
 # switch working directory
 WORKDIR /src
 
@@ -18,6 +21,8 @@ ENV FLASK_APP=app/app.py
 COPY ./housepricer housepricer
 COPY ./app app
 # copy all content from the local file to the image
-COPY ./data data
+COPY ./data/codepo_gb data/codepo_gb
+COPY ./data/Encoder.save data/Encoder.save
+COPY ./data/RandomModel.save data/RandomModel.save
 
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
