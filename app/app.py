@@ -7,7 +7,6 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    #don't load data in future just use for testing purposes
     model = modeler.trainer(None, "./data/", "RandomModel.save", None, False, "notrandom")
     model.is_model_fitted() #throw immediate exception (during docker compose up) if not fitted instead of at user input
     item_list = ["date", "postcode", "housetype", "newbuild", "estatetype", "transactiontype"]
@@ -17,13 +16,19 @@ def index():
     model_pred_string=prediction_string(data_list, model)
     #print(model_pred_string)    
     
-    return render_template('index.html', stringOut=model_pred_string)
+    return render_template('index.html', stringOut=model_pred_string
+                           , postcode=data_list["postcode"]
+                           , date=str(data_list["date"])
+                           , housetype = data_list["housetype"]
+                           , newbuild = data_list["newbuild"]
+                           , estatetype = data_list["estatetype"]
+                           , transactiontype = data_list["transactiontype"]
+                           )
 
 def prediction_string(data: dict, model : modeler.trainer) -> str:
     stringOut=""
     if (data["date"]!="") and (data["postcode"]!=""):
         parsed_data = parse_data(data)
-        #print(parsed_data)
         model_pred = max([2000], model.predict_values(parsed_data) )
         #print(model_pred)
         stringOut=f"Prediction: £{model_pred[0]:,.0f}"

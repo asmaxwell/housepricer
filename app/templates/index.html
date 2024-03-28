@@ -3,7 +3,8 @@
 {% block content %}
     <!--<h1>{% block title %} Housepricer {% endblock %}</h1>-->
 
-    <div class="card w-75 mb-3">
+    <br>
+    <div class="card w-100 mb-3">
         <div class="card-body">
             <h2 class="card-title">House Price Estimator</h2>
         <form action="" method="get">
@@ -11,11 +12,11 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label for="date" class="form-label">Date:</label>
-                        <input type="date" class="form-control" name="date" id="date" placeholder="dd/mm/yyyy">
+                        <input type="date" class="form-control" name="date" id="date" placeholder="dd/mm/yyyy" value="{{date}}" required>
                     </div>
                     <div class="col-md-6">        
                         <label for="postcode" class="form-label">Postcode:</label>
-                        <input type="text" class="form-control" name="postcode" id="postcode" placeholder="e.g. BS1 3RD">  
+                        <input type="text" class="form-control" name="postcode" id="postcode" placeholder="e.g. BS1 3RD" value="{{postcode}}" required>  
                     </div>
                 </div>
                 
@@ -23,18 +24,18 @@
                     <div class="col-md-6">        
                         <label for="housetype">Type of House:</label>        
                         <select class="form-select" aria-label="Default select example" id="housetype" name="housetype">
-                            <option value="F">flat</option>
-                            <option value="T">terrace</option>
-                            <option value="S">semi-detached</option>
-                            <option value="D">detached</option>
-                            <option value="O">other</option>
+                            <option value="F" {{'selected' if housetype=='F'}}>flat</option>
+                            <option value="T" {{'selected' if housetype=='T'}}>terrace</option>
+                            <option value="S" {{'selected' if housetype=='S'}}>semi-detached</option>
+                            <option value="D" {{'selected' if housetype=='D'}}>detached</option>
+                            <option value="O" {{'selected' if housetype=='O'}}>other</option>
                         </select>
                     </div>
                     <div class="col-md-6">
                         <label for="newbuild">New Build:</label>
                         <select class="form-select" aria-label="Default select example"  id="newbuild" name="newbuild">
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
+                            <option value="Yes" {{'selected' if newbuild=='Yes'}}>Yes</option>
+                            <option value="No" {{'selected' if newbuild=='No'}}>No</option>
                         </select>
                     </div>
                 </div>
@@ -43,30 +44,25 @@
             <div class="row g-3">
                 <div class="col-md-6">
                     <label for="estatetype">Estate Type:</label>
-                    <select class="form-select" id="estatetype" name="estatetype">
-                        <option value="Freehold">Freehold</option>
-                        <option value="Leasehold">Leasehold</option>
+                    <select class="form-select" id="estatetype" name="estatetype" value = "{{estatetype}}">
+                        <option value="Freehold" {{'selected' if estatetype=='Freehold'}}>Freehold</option>
+                        <option value="Leasehold" {{'selected' if estatetype=='Leasehold'}}>Leasehold</option>
                     </select>
                 </div>
                 <div class="col-md-6">
                     <label for="transactiontype">Transaction Type:</label>
-                    <select class="form-select" id="transactiontype" name="transactiontype">
-                        <option value="A">Standard (A)</option>
-                        <option value="B">Additional (B)</option>
+                    <select class="form-select" id="transactiontype" name="transactiontype" value = "{{transactiontype}}">
+                        <option value="A" {{'selected' if transactiontype=='A'}}>Standard (A)</option>
+                        <option value="B" {{'selected' if transactiontype=='B'}}>Additional (B)</option>
                     </select>
                 </div> 
             </div>
             <br>
-            <div class="row g-3">
-                <div class="col-6">
-                    <button type="submit" class="btn-primary btn-lg" >
-                        Convert
-                    </button>
-                </div>
-                <div class="col-6">
-                    <p class="fs-4 fw-bold">{{stringOut}}</p>
-                </div>
-            </div> 
+            <button type="submit" class="btn-primary btn-lg float-end" >
+                Convert
+            </button>
+            <p class="fs-4 fw-bold">{{stringOut}}</p>
+            
         </form>
 
         </div>

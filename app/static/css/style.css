@@ -5,8 +5,16 @@
   font-style: normal;
 }
 
+.navbar{
+  width:100%;
+  margin:0px auto;
+  left:0px;
+  right:0px;
+  padding:0;
+}
 
-.card-body img {
+
+.card-body {
     max-width: 100%;
     height: auto;
     display: block;
