@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # start by pulling the python image
-FROM python:3.11-slim-buster
+FROM --platform=linux/arm64 python:3.11-slim-buster
 
 #add user to prevent sudo commands from docker container
 RUN useradd -r  -s /bin/bash andy
